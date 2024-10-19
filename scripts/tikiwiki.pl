@@ -149,9 +149,15 @@ return undef;
 sub script_tikiwiki_files
 {
 local ($d, $ver, $opts, $upgrade) = @_;
-local @files = ( { 'name' => "source",
-	   'file' => "tikiwiki-$ver.zip",
-	   'url' => "http://osdn.dl.sourceforge.net/sourceforge/tikiwiki/tiki-$ver.zip" } );
+local @files = (
+	{ 'name' => "source",
+	  'file' => "tikiwiki-$ver.zip",
+	#   'url' => "http://osdn.dl.sourceforge.net/sourceforge/tikiwiki/tiki-$ver.zip" },
+	  'url' => "https://ubuntu24-pro.virtualmin.dev/tiki-$ver.zip" },
+	{ 'name' => "cli",
+	  'file' => "tiki-manager",
+	  'url' => "https://gitlab.com/tikiwiki/tiki-manager/-/jobs/artifacts/master/raw/tiki-manager.tgz?job=compressed",
+	  'nocache' => 1 } );
 return @files;
 }
 
@@ -185,6 +191,11 @@ local $err = &extract_script_archive($files->{'source'}, $temp, $d,
                                      $opts->{'dir'}, "tiki-$ver");
 $err && return (0, "Failed to extract source : $err");
 local $cfile = "$opts->{'dir'}/db/local.php";
+
+# Copy tiki-manager-cli XXXXX
+# &make_dir_as_domain_user($d, $opts->{'dir'}, 0755) if (!-d $opts->{'dir'});
+# &copy_source_dest($files->{'cli'}, "$opts->{'dir'}/tiki-manager-cli.phar");
+# &set_permissions_as_domain_user($d, 0750, "$opts->{'dir'}/tiki-manager.phar");
 
 if (!$upgrade) {
 	# Create the config file
