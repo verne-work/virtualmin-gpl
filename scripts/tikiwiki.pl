@@ -320,4 +320,65 @@ sub script_tikiwiki_site
 return 'http://www.tikiwiki.org/';
 }
 
+sub script_tikiwiki_kit
+{
+my ($d, $script, $sinfo) = @_;
+my $opts = $sinfo->{'opts'};
+# Tabs list
+my @tabs = (
+	[ "settings", "Settings" ],
+	[ "actions", "Actions" ],
+	[ "crons", "Cron Jobs" ],
+	[ "update", "Update" ] );
+# Do we have tab in URL
+my $tab = $in{'tab'};
+# Validate if passed tab in URL is in
+# tabs list or fall back to default
+$tab = $tabs[1]->[0] if (!$tab || !grep { $_->[0] eq $tab } @tabs);
+# Actions tab content
+my $actions_tab_content;
+# Setttings tab content
+my $settings_tab_content;
+# Crons tab content
+my $crons_tab_content;
+# Update tab content
+my $update_tab_content;
+
+#### 
+
+# All tabs start
+my $data = &ui_tabs_start(\@tabs, "tab", $tab, 0);
+# Actions tab content
+my @data_submits;
+$data .= &ui_tabs_start_tab("tab", "actions");
+$data .= &vui_ui_block($text{'actions_desc'});
+$data .= 'actions';
+$data .= &ui_tabs_end_tab();
+# Settings tab content
+$data .= &ui_tabs_start_tab("tab", "settings");
+$data .= &vui_ui_block($text{'settings_desc'});
+$data .= 'settings';
+$data .= &ui_tabs_end_tab();
+# Crons tab content
+$data .= &ui_tabs_start_tab("tab", "crons");
+$data .= &vui_ui_block($text{'crons_desc'});
+$data .= 'crons';
+$data .= &ui_tabs_end_tab();
+# Update tab content
+$data .= &ui_tabs_start_tab("tab", "update");
+$data .= &vui_ui_block($text{'update_desc'});
+$data .= 'update';
+$data .= &ui_tabs_end_tab();
+
+# All tabs end
+$data .= &ui_tabs_end();
+
+# Extra submits
+push(@data_submits, &ui_submit($text{'scripts_kit_apply'},
+	"kit_form_apply", undef,
+	"data-submit-nested='apply' form='kit_${tab}_form'"));
+
+# Return data
+return { data => $data, extra_submits => \@data_submits };
+}
 1;
